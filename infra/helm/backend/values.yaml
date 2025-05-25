@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: harbor.local/vibetribe/backend
-  tag: dev
+  tag: ""  # Let ArgoCD override this with latest@sha256:...
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
