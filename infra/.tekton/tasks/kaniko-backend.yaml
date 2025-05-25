@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: kaniko-backend
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: IMAGE
+      type: string
+    - name: CONTEXT
+      type: string
+      default: backend/
+    - name: DOCKERFILE
+      type: string
+      default: backend/Dockerfile
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:latest
+      env:
+        - name: DOCKER_CONFIG
+          value: /tekton/home/.docker
+      workingDir: $(workspaces.source.path)
+      args:
+        - --dockerfile=$(params.DOCKERFILE)
+        - --context=$(workspaces.source.path)/$(params.CONTEXT)
+        - --destination=$(params.IMAGE)
+        - --insecure
+        - --skip-tls-verify
+        - --snapshotMode=time
+      volumeMounts:
+        - name: docker-config
+          mountPath: /tekton/home/.docker
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: harbor-auth

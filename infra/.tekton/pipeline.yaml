@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: vibetribe-ci-pipeline
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: source
+    - name: env-config
+  params:
+    - name: git-repo-url
+      type: string
+    - name: git-revision
+      type: string
+      default: main
+    - name: backend-image
+      type: string
+    - name: frontend-image
+      type: string
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone
+        kind: Task
+      params:
+        - name: git-repo-url
+          value: $(params.git-repo-url)
+        - name: git-revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: source
+
+    - name: build-backend
+      runAfter: [clone-repo]
+      taskRef:
+        name: maven-build
+      params:
+        - name: contextDir
+          value: backend
+      workspaces:
+        - name: source
+          workspace: source
+
+    - name: build-frontend
+      runAfter: [build-backend]
+      taskRef:
+        name: npm-build-2
+      params:
+        - name: build-command
+          value: npm run build
+      workspaces:
+        - name: source
+          workspace: source
+        - name: env-config
+          workspace: env-config
+
+    - name: kaniko-backend
+      runAfter: [build-backend]
+      taskRef:
+        name: kaniko-backend
+      params:
+        - name: IMAGE
+          value: $(params.backend-image)
+      workspaces:
+        - name: source
+          workspace: source
+
+    - name: kaniko-frontend
+      runAfter: [build-frontend]
+      taskRef:
+        name: kaniko-frontend
+      params:
+        - name: IMAGE
+          value: $(params.frontend-image)
+      workspaces:
+        - name: source
+          workspace: source

@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: vibetribe-ci-run
+  namespace: tekton-pipelines
+  annotations:
+    tekton.dev/no-affinity-assistant: "true"
+    pipeline.tekton.dev/disable-affinity-assistant: "true"
+spec:
+  pipelineRef:
+    name: vibetribe-ci-pipeline
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: source-volume
+    - name: env-config
+      configMap:
+        name: frontend-env-config
+  params:
+    - name: git-repo-url
+      value: https://github.com/VibeTribeOrganization/VibeTribe.git
+    - name: git-revision
+      value: main
+    - name: backend-image
+      value: harbor.local/vibetribe/backend:latest
+    - name: frontend-image
+      value: harbor.local/vibetribe/frontend:latest

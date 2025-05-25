@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: git-clone
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: output
+  steps:
+    - name: clone
+      image: bitnami/git:latest
+      script: |
+        #!/bin/bash
+        set -e
+
+        echo "Workspace path: $(workspaces.output.path)"
+        rm -rf "$(workspaces.output.path)"/* || true
+        rm -rf "$(workspaces.output.path)"/.[!.]* || true
+        rm -rf "$(workspaces.output.path)"/..?* || true
+
+        git clone --depth=1 --branch=main https://github.com/VibeTribeOrganization/VibeTribe.git $(workspaces.output.path)/

@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: vibetribe-listener-v2
+  namespace: tekton-pipelines
+  labels:
+    eventlistener: vibetribe-listener-v2
+spec:
+  serviceAccountName: pipeline
+  triggers:
+    - name: github-push-trigger
+      bindings:
+        - ref: vibetribe-binding
+      template:
+        ref: vibetribe-template

@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: maven-build
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: contextDir
+      type: string
+      default: .
+  steps:
+    - name: build
+      image: maven:3.9.6-eclipse-temurin-17
+      workingDir: $(workspaces.source.path)/$(params.contextDir)
+      env:
+        - name: MAVEN_CONFIG
+          value: $(workspaces.source.path)/.m2
+      script: |
+        #!/bin/sh
+        mvn -B -Dmaven.repo.local=$(workspaces.source.path)/.m2 clean package

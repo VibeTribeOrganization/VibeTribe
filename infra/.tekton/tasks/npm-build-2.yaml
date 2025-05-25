@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: npm-build-2
+  namespace: tekton-pipelines
+spec:
+  description: |
+    Build the React frontend with npm.
+    • workspace "source"  – repo cloned by git-clone
+    • workspace "env-config" – ConfigMap holding .env
+  params:
+    - name: build-command
+      type: string
+      default: npm run build
+  workspaces:
+    - name: source
+    - name: env-config
+  steps:
+    - name: copy-env
+      image: cgr.dev/chainguard/busybox:latest
+      securityContext:
+        runAsUser: 0
+      script: |
+        #!/bin/sh
+        set -eu
+        rm -f "$(workspaces.source.path)/client/.env" || true
+        cp "$(workspaces.env-config.path)/.env" "$(workspaces.source.path)/client/.env"
+
+    - name: install-deps
+      image: node:20-bullseye
+
+      workingDir: $(workspaces.source.path)/client
+      script: |
+        npm config set registry https://registry.npmjs.org/
+        npm install --legacy-peer-deps
+
+    - name: build-app
+      image: node:20-bullseye
+
+      workingDir: $(workspaces.source.path)/client
+      script: |
+        $(params.build-command)
