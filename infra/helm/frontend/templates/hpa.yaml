@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
-    {{- include "backend.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "backend.fullname" . }}
+    name: {{ .Chart.Name }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
@@ -29,17 +29,5 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
-  behavior:
-    scaleUp:
-      stabilizationWindowSeconds: 30
-      policies:
-        - type: Percent
-          value: 100
-          periodSeconds: 15
-    scaleDown:
-      stabilizationWindowSeconds: 30
-      policies:
-        - type: Percent
-          value: 50
-          periodSeconds: 30
 {{- end }}
+

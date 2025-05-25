@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: harbor.local/vibetribe/backend
-  tag: ""  # Let ArgoCD override this with latest@sha256:...
+  tag: ""  
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
@@ -32,9 +32,18 @@ serviceAccount:
   create: true
   name: ""
 
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 

@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -20,3 +22,5 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

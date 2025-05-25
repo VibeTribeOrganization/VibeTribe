@@ -19,3 +19,18 @@ ingress:
   path: /
   pathType: Prefix
 
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 150m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 50
+
