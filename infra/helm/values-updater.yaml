@@ -1,0 +1,22 @@
+image:
+  repository: quay.io/argoprojlabs/argocd-image-updater
+  tag: v0.13.0
+
+
+args:
+  - run
+
+config:
+  registries:
+    - name: harbor
+      prefix: harbor.local
+      api_url: http://harbor-core.harbor.svc.cluster.local
+      insecure: true
+
+auth:
+  harbor.local:
+    username: "robot$tekton-bot"
+    password: "8yId88koDR3BdpJkX1l3FIduE7QoF0ed"
+
+logLevel: debug
+
