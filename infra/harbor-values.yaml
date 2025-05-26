@@ -9,3 +9,4 @@ expose:
     annotations:
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
 
+
