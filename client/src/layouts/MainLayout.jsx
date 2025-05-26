@@ -287,7 +287,7 @@ const MainLayout = ({ children }) => {
               onClick={() => navigate("/")}
               sx={{
                 fontWeight: 700,
-                color: "#0284C7",
+                color: "#ff0000",
                 cursor: "pointer",
                 fontSize: { xs: "1.2rem", sm: "1.5rem" },
               }}
